@@ -1,8 +1,5 @@
 ## andy-blog-koa
-
-
 本项目采用 Jenkins 自动化部署
-[![Build Status](https://www.travis-ci.org/smileAndy/andy-blog-koa.svg?branch=master)](https://www.travis-ci.org/smileAndy/andy-blog-koa)
 
 - 权限控制
 - 无感知Token刷新

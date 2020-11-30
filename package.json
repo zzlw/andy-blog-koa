@@ -1,0 +1,48 @@
+{
+  "name": "andy-blog-koa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start:dev": "cross-env NODE_ENV=dev && nodemon --inspect-brk",
+    "start:prod": "pm2 start ecosystem.config.js --env prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zzlw/andy-blog-koa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zzlw/andy-blog-koa/issues"
+  },
+  "homepage": "https://github.com/zzlw/andy-blog-koa#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "bcryptjs": "^2.4.3",
+    "co-busboy": "^1.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "koa2-cors": "^2.0.6",
+    "lodash": "^4.17.14",
+    "module-alias": "^2.2.0",
+    "mysql2": "^1.6.5",
+    "qiniu": "^7.2.2",
+    "require-directory": "^2.1.1",
+    "sequelize": "^5.10.1",
+    "stream-wormhole": "^1.1.0",
+    "validator": "^11.1.0",
+    "cross-env": "^7.0.2"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@models": "app/models",
+    "@dao": "app/dao",
+    "@validator": "app/validators",
+    "@exception": "core/http-exception"
+  }
+}

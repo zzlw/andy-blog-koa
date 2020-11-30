@@ -2,7 +2,7 @@ module.exports = {
   environment: 'dev',
   database: {
     dbName: 'blog',
-    host: process.env.NODE_ENV === 'prod' ? '172.18.41.238' : 'http://localhost:3000',
+    host: process.env.NODE_ENV === 'prod' ? '47.115.125.250' : 'http://localhost:3000',
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -32,8 +32,8 @@ module.exports = {
   },
   // 七牛相关配置
   qiniu: {
-    accessKey: 'Tm5YPo-F7YgvlEp4nDlkvf6xuOMHFOo-UuwBpgT5',
-    secretKey: 'UnEeTR65bQUQxhR8e6y9u2tCA155cHKg3ujM_sHp',
+    accessKey: process.env.QN_ACCESSKEY,
+    secretKey: process.env.QN_SECRETKEY,
     bucket: 'cdn-fxq-design',
     siteDomain: 'https://cdn.fxq.design/'
   },

@@ -2,10 +2,11 @@ module.exports = {
   environment: 'dev',
   database: {
     dbName: 'blog',
-    host: process.env.NODE_ENV === 'prod' ? '47.115.125.250' : 'http://localhost:3000',
+    host: process.env.NODE_ENV === 'prod' ? 'mysql' : 'localhost:3000',
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    protocol: 'http',
     logging: false,
     timezone: '+08:00'
   },
@@ -35,7 +36,7 @@ module.exports = {
     accessKey: process.env.QN_ACCESSKEY,
     secretKey: process.env.QN_SECRETKEY,
     bucket: 'cdn-fxq-design',
-    siteDomain: 'https://cdn.fxq.design/'
+    siteDomain: 'https://resources.jiawen.live/'
   },
-  host: 'https://api.fxq.design'
+  host: 'https://api.jiawen.live'
 }

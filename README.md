@@ -1,5 +1,4 @@
 ## andy-blog-koa
-本项目采用 Jenkins 自动化部署
 
 - 权限控制
 - 无感知Token刷新
@@ -35,6 +34,9 @@ npm run start:dev
 
 # production 
 npm run start:prod
+
+# docker
+docker container run -d --name andy-blog-koa -p 80:3000 zzlwte/andy-blog-koa
 ```
 
 ### 创建超级管理员

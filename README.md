@@ -4,7 +4,7 @@
 [![GitHub issues](http://img.shields.io/github/issues/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/issues)
 [![GitHub forks](http://img.shields.io/github/forks/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/network)
 [![GitHub stars](http://img.shields.io/github/stars/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/stargazers)
-[![GitHub license](http://img.shields.io/github/license/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/blob/master/LICENSE)
+[![GitHub license](https://github.com/zzlw/andy-blog-koa/blob/master/LICENSE)](http://github.com/zzlw/andy-blog-koa/blob/master/LICENSE)
 
 - 权限控制
 - 无感知Token刷新

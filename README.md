@@ -1,5 +1,11 @@
 ## andy-blog-koa
 
+![GitHub action](https://github.com/zzlw/andy-blog-koa/workflows/docker%20image%20build%20and%20push/badge.svg)
+[![GitHub issues](http://img.shields.io/github/issues/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/issues)
+[![GitHub forks](http://img.shields.io/github/forks/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/network)
+[![GitHub stars](http://img.shields.io/github/stars/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/stargazers)
+[![GitHub license](http://img.shields.io/github/license/zzlw/andy-blog-koa.svg)](http://github.com/zzlw/andy-blog-koa/blob/master/LICENSE)
+
 - 权限控制
 - 无感知Token刷新
 - 支持七牛云文件上传

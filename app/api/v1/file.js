@@ -15,4 +15,14 @@ fileApi.post('/', new Auth().m, async (ctx) => {
   ctx.body = arr
 })
 
+fileApi.post('/music', new Auth().m, async (ctx) => {
+  const files = await ctx.multipart({
+    singleLimit: 1024 * 1024 * 10
+  })
+
+  const upLoader = new UpLoader(`music/`)
+  const arr = await upLoader.upload(files)
+  ctx.body = arr
+})
+
 module.exports = fileApi

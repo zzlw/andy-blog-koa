@@ -28,22 +28,22 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKERHUB_REPOSITORY }}:latest
-  deploy:
-    needs: [build]
-    name: Pull Docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            cd /data/docker
-            docker-compose stop blog_server
-            docker rm -f $(docker ps -a --filter ancestor=${{ secrets.DOCKERHUB_REPOSITORY }}:latest -q)
-            docker rmi -f $(docker images ${{ secrets.DOCKERHUB_REPOSITORY }}:latest -q)
-            docker login --username=${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
-            docker pull ${{ secrets.DOCKERHUB_REPOSITORY }}:latest
-            docker-compose up -d --build
+  # deploy:
+  #   needs: [build]
+  #   name: Pull Docker
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.SSH_HOST }}
+  #         username: ${{ secrets.SSH_USERNAME }}
+  #         password: ${{ secrets.SSH_PASSWORD }}
+  #         script: |
+  #           cd /data/docker
+  #           docker-compose stop blog_server
+  #           docker rm -f $(docker ps -a --filter ancestor=${{ secrets.DOCKERHUB_REPOSITORY }}:latest -q)
+  #           docker rmi -f $(docker images ${{ secrets.DOCKERHUB_REPOSITORY }}:latest -q)
+  #           docker login --username=${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+  #           docker pull ${{ secrets.DOCKERHUB_REPOSITORY }}:latest
+  #           docker-compose up -d --build

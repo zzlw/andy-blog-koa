@@ -1,8 +1,8 @@
 module.exports = {
-  environment: 'dev',
+  environment: process.env.NODE_ENV,
   database: {
     dbName: 'blog',
-    host: process.env.NODE_ENV === 'prod' ? 'mysql' : 'localhost:3000',
+    host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -36,7 +36,7 @@ module.exports = {
     accessKey: process.env.QN_ACCESSKEY,
     secretKey: process.env.QN_SECRETKEY,
     bucket: 'cdn-fxq-design',
-    siteDomain: 'https://resources.jiawen.live/'
+    siteDomain: `https://${process.env.RESOURCES}/`
   },
-  host: 'https://api.jiawen.live'
+  host: `https://${process.env.API_DOMAIN}`
 }

@@ -4,9 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=dev && nodemon --inspect-brk",
-    "start:prod": "pm2 start ecosystem.config.js --env prod",
-    "start:docker": "cross-env NODE_ENV=prod node ./app.js"
+    "start:dev": "cross-env NODE_ENV=development && nodemon --inspect-brk",
+    "start:prod": "cross-env NODE_ENV=production node ./app.js"
   },
   "repository": {
     "type": "git",

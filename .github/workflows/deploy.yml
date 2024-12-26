@@ -26,8 +26,16 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKERHUB_REPOSITORY }}:latest
+          build-args: |
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_USER=${{ secrets.DB_USER }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            QN_ACCESSKEY=${{ secrets.QN_ACCESSKEY }}
+            QN_SECRETKEY=${{ secrets.QN_SECRETKEY }}
   # deploy:
   #   needs: [build]
   #   name: Pull Docker

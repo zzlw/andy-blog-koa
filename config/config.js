@@ -36,7 +36,7 @@ module.exports = {
     accessKey: process.env.QN_ACCESSKEY,
     secretKey: process.env.QN_SECRETKEY,
     bucket: 'cdn-fxq-design',
-    siteDomain: `https://${process.env.RESOURCES}/`
+    siteDomain: 'https://resources.jiawen.live/'
   },
-  host: `https://${process.env.API_DOMAIN}`
+  host: 'https://api.jiawen.live'
 }

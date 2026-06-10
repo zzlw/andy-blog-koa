@@ -20,16 +20,15 @@ pnpm test
 
 推荐通过 [andy-blog-deploy](../andy-blog-deploy) 一键启动全栈：`make dev`。
 
-## 数据迁移（MySQL → MongoDB）
+## 数据同步到生产（mongodump / mongorestore）
 
 ```bash
-MYSQL_HOST=127.0.0.1 MYSQL_PORT=13306 MYSQL_USER=root \
-MYSQL_PASSWORD=xxx MYSQL_DATABASE=andy_blog \
-MONGO_URI=mongodb://127.0.0.1:27017/andy_blog \
-pnpm migrate
-```
+# 本地导出（容器内执行）
+docker exec andy-blog-mongo-1 mongodump --db andy_blog --archive --gzip > andy_blog.dump.gz
 
-脚本幂等可重跑，保留原数字 id，结束输出计数核对表。
+# 生产导入（--drop 先清空同名集合再恢复）
+docker exec -i <prod-mongo-container> mongorestore --archive --gzip --drop < andy_blog.dump.gz
+```
 
 ## 环境变量
 

@@ -1,6 +1,9 @@
 node_modules
+dist
+coverage
 npm-debug.log
 .git
+.github
 .gitignore
 .env*
 Dockerfile

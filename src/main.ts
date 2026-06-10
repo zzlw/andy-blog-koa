@@ -11,6 +11,8 @@ async function bootstrap() {
     cors: {
       origin: true,
       credentials: true,
+      // @fastify/cors 默认仅放行 GET,HEAD,POST，需显式声明否则 PUT/DELETE 预检失败
+      methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     },
   })
 

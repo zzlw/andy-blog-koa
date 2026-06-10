@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=development && nodemon --inspect-brk",
+    "start:dev": "cross-env NODE_ENV=development nodemon --inspect=0.0.0.0:9229 app.js",
     "start:prod": "cross-env NODE_ENV=production node ./app.js"
   },
   "repository": {
@@ -37,6 +37,9 @@
     "stream-wormhole": "^1.1.0",
     "validator": "^11.1.0",
     "cross-env": "^7.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   },
   "_moduleAliases": {
     "@root": ".",

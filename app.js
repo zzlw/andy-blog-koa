@@ -20,6 +20,8 @@ multipart(app)
 
 InitManager.initCore(app)
 
-app.listen(3000, () => {
-  console.log(`当前 NODE_ENV ${process.env.NODE_ENV}. listening port 3000`)
+const port = Number(process.env.PORT) || 3000
+
+app.listen(port, () => {
+  console.log(`当前 NODE_ENV ${process.env.NODE_ENV}. listening port ${port}`)
 })

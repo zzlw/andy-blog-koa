@@ -16,8 +16,8 @@ module.exports = {
   },
   // JWT
   security: {
-    // secretKey 需要比较复杂的字符串
-    secretKey: 'secretKey',
+    // secretKey 需要比较复杂的字符串，统一从环境变量注入，禁止硬编码
+    secretKey: process.env.JWT_SECRET || 'dev_only_insecure_secret',
     accessExp: 60 * 60,  // 1h
     // accessExp: 20,  // 20s 测试令牌过期
     // refreshExp 设置refresh_token的过期时间，默认一个月
@@ -38,5 +38,6 @@ module.exports = {
     bucket: 'cdn-fxq-design',
     siteDomain: 'https://resources.jiawen.live/'
   },
-  host: 'https://api.jiawen.live'
+  // 对外 API 域名（用于拼接资源 URL 等），按环境注入
+  host: process.env.API_PUBLIC_HOST || 'https://api.jiawen.live'
 }

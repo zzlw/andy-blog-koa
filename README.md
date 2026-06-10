@@ -40,4 +40,8 @@ pnpm migrate
 | `REDIS_URI` | Redis 连接串 |
 | `JWT_SECRET` | JWT 签名密钥 |
 | `JWT_ACCESS_EXPIRES_IN` / `JWT_REFRESH_EXPIRES_IN` | 令牌过期秒数 |
-| `QN_ACCESSKEY` / `QN_SECRETKEY` / `QN_BUCKET` / `QN_SITE_DOMAIN` | 七牛云上传配置 |
+| `S3_ENDPOINT` / `S3_REGION` | S3 兼容存储地址与区域（AWS S3 / R2 / MinIO） |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | S3 访问凭证 |
+| `S3_BUCKET` | 存储桶名称 |
+| `S3_PUBLIC_URL` | 浏览器可达的资源基础地址（CDN 域名），以 `/` 结尾 |
+| `S3_FORCE_PATH_STYLE` | 是否 path-style 访问，MinIO 需 `true`（默认），AWS 设 `false` |

@@ -35,5 +35,5 @@ COPY package.json ./
 
 USER node
 EXPOSE 3000
-# 全部敏感配置（MONGO_URI/JWT_SECRET/七牛密钥）由运行时环境变量注入
+# 全部敏感配置（MONGO_URI/JWT_SECRET/S3 凭证）由运行时环境变量注入
 CMD ["node", "dist/main.js"]

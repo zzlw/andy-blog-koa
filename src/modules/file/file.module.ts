@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
-import { QiniuService } from './qiniu.service'
+import { S3Service } from './s3.service'
 import { FileController } from './file.controller'
 
 @Module({
   controllers: [FileController],
-  providers: [QiniuService],
+  providers: [S3Service],
 })
 export class FileModule {}

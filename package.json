@@ -22,6 +22,7 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/event-emitter": "^3.0.0",
     "@nestjs/jwt": "^11.0.0",
+    "@aws-sdk/client-s3": "^3.700.0",
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-fastify": "^11.0.0",
     "@nestjs/throttler": "^6.4.0",
@@ -33,7 +34,6 @@
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
     "mongoose": "^8.9.0",
-    "qiniu": "^7.14.0",
     "redis": "^4.7.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"

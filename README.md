@@ -1,6 +1,6 @@
 # andy-blog-api
 
-jiawen.live 博客后端（NestJS 重写版，参考 [nodepress](https://github.com/surmon-china/nodepress) 架构）。
+jiawen.live 博客后端（NestJS 重写版）。
 
 ## 技术栈
 

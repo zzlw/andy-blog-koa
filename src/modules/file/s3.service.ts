@@ -20,7 +20,11 @@ export class S3Service {
     },
   })
 
-  /** 上传 buffer，返回浏览器可达的完整 URL（同名 key 覆盖，与旧系统行为一致） */
+  /**
+   * 上传 buffer，返回「相对路径」（如 /blog/xxx.jpg），不含域名。
+   * 域名/协议由前端用 STATIC_PATH 在渲染时拼接，这样换域名/换协议只改环境变量，
+   * 无需改动数据库存量数据。同名 key 覆盖，与旧系统行为一致。
+   */
   async upload(filename: string, buffer: Buffer, contentType?: string): Promise<string> {
     const key = `${APP_CONFIG.s3.keyPrefix}${filename}`
     try {
@@ -33,7 +37,7 @@ export class S3Service {
           CacheControl: 'public, max-age=31536000',
         }),
       )
-      return `${APP_CONFIG.s3.publicUrl}${key}`
+      return `/${key}`
     } catch (error) {
       this.logger.error(`S3 upload failed: ${(error as Error).message}`)
       throw new UploadFailedException()

@@ -19,6 +19,11 @@ export const APP_CONFIG = {
     accessExpiresIn: Number(env.JWT_ACCESS_EXPIRES_IN) || 60 * 60,
     /** refresh token 过期时间（秒） */
     refreshExpiresIn: Number(env.JWT_REFRESH_EXPIRES_IN) || 60 * 60 * 24 * 30,
+    /** 空库启动时自动创建的超管账号（仅 authors 集合为空时生效，幂等） */
+    initAdmin: {
+      name: env.ADMIN_INIT_NAME || 'admin',
+      password: env.ADMIN_INIT_PASSWORD || 'admin123456',
+    },
   },
 
   /** S3 兼容对象存储（AWS S3 / Cloudflare R2 / MinIO 等） */

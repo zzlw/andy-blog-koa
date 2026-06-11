@@ -12,3 +12,6 @@ coverage/
 *.key
 *.p12
 credentials*.json
+
+# pnpm 本地缓存
+.pnpm-store/

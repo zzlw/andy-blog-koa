@@ -1,6 +1,8 @@
 import { Model } from 'mongoose'
 import { compareSync, hashSync } from 'bcryptjs'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
+import { APP_CONFIG } from '@/app.config'
+import { AuthorRole } from '@/constants/role.constant'
 import { InjectModel } from '@/core/database/model.transformer'
 import { TokenService, TokenType } from '@/core/auth/token.service'
 import {
@@ -21,11 +23,33 @@ import {
 const BCRYPT_ROUNDS = 10
 
 @Injectable()
-export class AuthorService {
+export class AuthorService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AuthorService.name)
+
   constructor(
     @InjectModel(Author) private readonly authorModel: Model<Author>,
     private readonly tokenService: TokenService,
   ) {}
+
+  /**
+   * 空库种子：authors 集合为空时自动创建超管，解决全新环境
+   * 「登录需要账号、建账号需要登录」的死锁（make reset / 全新部署）。
+   * 幂等：库里有任何作者即跳过，不影响数据导入方案。
+   */
+  async onApplicationBootstrap() {
+    const count = await this.authorModel.countDocuments({}).exec()
+    if (count > 0) return
+
+    const { name, password } = APP_CONFIG.auth.initAdmin
+    await this.authorModel.create({
+      name,
+      password: hashSync(password, BCRYPT_ROUNDS),
+      role: AuthorRole.SUPER_ADMIN,
+    })
+    this.logger.warn(
+      `检测到空库，已自动创建超级管理员「${name}」（密码来自 ADMIN_INIT_PASSWORD，未配置则为开发默认值），请首次登录后立即修改密码`,
+    )
+  }
 
   /** 登录：校验凭据，签发双令牌 */
   async login(name: string, password: string) {

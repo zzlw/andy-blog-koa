@@ -6,6 +6,45 @@ import fastifyMultipart from '@fastify/multipart'
 import { AppModule } from './app.module'
 import { APP_CONFIG } from './app.config'
 
+/**
+ * 注册优雅关闭：收到 SIGTERM/SIGINT 时主动 app.close()（会触发所有
+ * onModuleDestroy / onApplicationShutdown 钩子），并用超时兜底强制退出。
+ *
+ * 不使用 app.enableShutdownHooks()：它注册的信号处理器一旦内部某个钩子
+ * 卡住就永不退出，导致 nest --watch 旧进程杀不掉（端口被占 → EADDRINUSE），
+ * 生产环境 docker stop 也会被 SIGKILL 硬杀。这里的超时保证一定能退出。
+ */
+function registerGracefulShutdown(app: NestFastifyApplication, timeoutMs = 5000) {
+  const logger = new Logger('Shutdown')
+  let shuttingDown = false
+
+  const handle = (signal: NodeJS.Signals) => {
+    if (shuttingDown) return
+    shuttingDown = true
+    logger.log(`收到 ${signal}，开始关闭...`)
+
+    const forceExit = setTimeout(() => {
+      logger.error(`优雅关闭超时 ${timeoutMs}ms，强制退出`)
+      process.exit(1)
+    }, timeoutMs)
+    forceExit.unref()
+
+    app
+      .close()
+      .then(() => {
+        logger.log('已优雅关闭')
+        process.exit(0)
+      })
+      .catch((error) => {
+        logger.error('关闭出错', error)
+        process.exit(1)
+      })
+  }
+
+  process.once('SIGTERM', () => handle('SIGTERM'))
+  process.once('SIGINT', () => handle('SIGINT'))
+}
+
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
     cors: {
@@ -31,7 +70,7 @@ async function bootstrap() {
       stopAtFirstError: false,
     }),
   )
-  app.enableShutdownHooks()
+  registerGracefulShutdown(app)
 
   await app.listen(APP_CONFIG.port, '0.0.0.0')
   new Logger('Bootstrap').log(

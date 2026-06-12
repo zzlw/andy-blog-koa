@@ -18,6 +18,11 @@ export class S3Service {
       accessKeyId: APP_CONFIG.s3.accessKeyId,
       secretAccessKey: APP_CONFIG.s3.secretAccessKey,
     },
+    // AWS SDK >= 3.729 默认给 Put/Get 注入 CRC32 校验头（x-amz-checksum-crc32），
+    // 阿里云 OSS / R2 等 S3 兼容实现不支持，会直接拒绝请求导致上传失败，
+    // 故改回「仅在 API 要求时」才计算校验和
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   })
 
   /**

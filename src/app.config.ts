@@ -46,4 +46,29 @@ export const APP_CONFIG = {
     /** 单次最多上传数量 */
     maxCount: 10,
   },
+
+  /** 站点信息：用于 AI 知识库的站点/作者上下文与文章 URL 生成 */
+  site: {
+    name: env.SITE_NAME || '博客',
+    /** 对外可访问的前台地址（用于生成文章 URL，不带末尾斜杠） */
+    url: (env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, ''),
+    description: env.SITE_DESCRIPTION || '',
+    keywords: (env.SITE_KEYWORDS || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean),
+  },
+
+  /**
+   * 内容变更 Webhook：文章/站点信息变动时通知外部 AI 知识库服务（surmon.me.ai）。
+   * 采用 HMAC-SHA256 签名 + 时间戳防重放，与 NodePress 的 webhook 协议一致。
+   */
+  webhook: {
+    /** 完整接收地址（如 https://andy-blog-ai.<account>.workers.dev/webhook）；为空则禁用 */
+    endpoint: env.WEBHOOK_ENDPOINT || '',
+    /** 签名密钥，必须与 AI 服务侧 WEBHOOK_SECRET 完全一致 */
+    secret: env.WEBHOOK_SECRET || '',
+    /** 请求超时（毫秒） */
+    timeoutMs: Number(env.WEBHOOK_TIMEOUT_MS) || 8000,
+  },
 }

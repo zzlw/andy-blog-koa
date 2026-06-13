@@ -5,7 +5,11 @@ import { InjectModel } from '@/core/database/model.transformer'
 import { NotFoundException } from '@/common/exceptions/biz.exception'
 import { paginate } from '@/common/helpers/paginate.helper'
 import { IdentityType, RequestIdentity } from '@/constants/role.constant'
-import { EVENT_ARTICLE_CHANGED } from '@/constants/event.constant'
+import {
+  EVENT_ARTICLE_CHANGED,
+  EVENT_ARTICLE_DELETED,
+  EVENT_ARTICLE_UPSERTED,
+} from '@/constants/event.constant'
 import { Category } from '@/modules/category/category.model'
 import { Tag } from '@/modules/tag/tag.model'
 import { Author, AUTHOR_SAFE_PROJECTION } from '@/modules/author/author.model'
@@ -98,6 +102,7 @@ export class ArticleService {
   async create(dto: CreateArticleDTO) {
     const article = await this.articleModel.create({ ...dto })
     this.eventEmitter.emit(EVENT_ARTICLE_CHANGED)
+    this.eventEmitter.emit(EVENT_ARTICLE_UPSERTED, article.toObject())
     return article
   }
 
@@ -108,6 +113,7 @@ export class ArticleService {
       .exec()
     if (!article) throw new NotFoundException('文章不存在')
     this.eventEmitter.emit(EVENT_ARTICLE_CHANGED)
+    this.eventEmitter.emit(EVENT_ARTICLE_UPSERTED, article)
     return article
   }
 
@@ -115,6 +121,7 @@ export class ArticleService {
     const result = await this.articleModel.deleteOne({ id }).exec()
     if (!result.deletedCount) throw new NotFoundException('文章不存在')
     this.eventEmitter.emit(EVENT_ARTICLE_CHANGED)
+    this.eventEmitter.emit(EVENT_ARTICLE_DELETED, id)
   }
 
   async like(id: number) {

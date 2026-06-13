@@ -20,6 +20,7 @@ import { MessageModule } from '@/modules/message/message.module'
 import { FriendModule } from '@/modules/friend/friend.module'
 import { AuthorModule } from '@/modules/author/author.module'
 import { FileModule } from '@/modules/file/file.module'
+import { WebhookModule } from '@/modules/webhook/webhook.module'
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { FileModule } from '@/modules/file/file.module'
     MessageModule,
     FriendModule,
     FileModule,
+    WebhookModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

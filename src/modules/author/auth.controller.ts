@@ -31,6 +31,18 @@ export class AuthController {
     return this.authorService.refresh(token)
   }
 
+  /**
+   * 校验 access token 是否有效：仅返回 200 即代表通过。
+   * 供外部服务（andy-blog-ai Worker 的后台鉴权中间件）反查后台令牌合法性，
+   * Worker 侧只判断 HTTP 是否 2xx，不消费返回体。
+   */
+  @Post('verify-token')
+  @Auth()
+  @SuccessMessage('令牌有效')
+  verifyToken(@Identity() identity: RequestIdentity) {
+    return { author_id: identity.authorId, role: identity.role }
+  }
+
   @Get('profile')
   @Auth()
   profile(@Identity() identity: RequestIdentity) {

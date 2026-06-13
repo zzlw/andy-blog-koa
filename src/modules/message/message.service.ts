@@ -11,7 +11,8 @@ export class MessageService {
   constructor(@InjectModel(Message) private readonly messageModel: Model<Message>) {}
 
   list(page?: number, pageSize?: number) {
-    return paginate(this.messageModel, {}, { page, pageSize, sort: { id: -1 } })
+    // 留言板按创建时间倒序：最新留言置顶（id 作同毫秒兜底，不依赖自增 id 顺序）
+    return paginate(this.messageModel, {}, { page, pageSize, sort: { created_at: -1, id: -1 } })
   }
 
   create(dto: CreateMessageDTO) {

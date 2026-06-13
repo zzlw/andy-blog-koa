@@ -16,9 +16,15 @@ export class CommentService {
     @InjectModel(Article) private readonly articleModel: Model<Article>,
   ) {}
 
-  /** 指定文章的全部评论（扁平结构，parent_id 关联，由前端组装树） */
+  /** 指定文章的全部评论（扁平结构，parent_id 关联，由前端组装树）
+   *  按创建时间正序：顶层评论与各楼层回复都按时间先后排列（符合阅读顺序与“抢沙发”习惯），
+   *  id 作为同一毫秒下的稳定兜底，避免依赖自增 id 顺序。 */
   listByArticle(articleId: number) {
-    return this.commentModel.find({ article_id: articleId }).sort({ id: 1 }).lean().exec()
+    return this.commentModel
+      .find({ article_id: articleId })
+      .sort({ created_at: 1, id: 1 })
+      .lean()
+      .exec()
   }
 
   async create(dto: CreateCommentDTO) {

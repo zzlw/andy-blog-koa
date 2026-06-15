@@ -60,6 +60,9 @@
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.18.0"
   },
+  "pnpm": {
+    "ignoredBuiltDependencies": ["protobufjs"]
+  },
   "engines": {
     "node": ">=22"
   },

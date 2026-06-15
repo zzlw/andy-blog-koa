@@ -1,0 +1,4 @@
+# pnpm 11 默认不运行依赖的构建脚本，需在此显式批准。
+# protobufjs 的 postinstall 在无 versionScheme 时为空操作，批准其构建以消除 ERR_PNPM_IGNORED_BUILDS。
+allowBuilds:
+  protobufjs: true

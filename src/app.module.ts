@@ -21,6 +21,7 @@ import { FriendModule } from '@/modules/friend/friend.module'
 import { AuthorModule } from '@/modules/author/author.module'
 import { FileModule } from '@/modules/file/file.module'
 import { WebhookModule } from '@/modules/webhook/webhook.module'
+import { AnalyticsModule } from '@/modules/analytics/analytics.module'
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { WebhookModule } from '@/modules/webhook/webhook.module'
     FriendModule,
     FileModule,
     WebhookModule,
+    AnalyticsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

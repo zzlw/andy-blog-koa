@@ -60,6 +60,20 @@ export const APP_CONFIG = {
   },
 
   /**
+   * Google Analytics 4 访客统计（后台看板「访客统计」图）。
+   * 需在 GCP 创建 service account，并将其邮箱授予该 GA4 资源「查看者」权限。
+   * 凭证以内联 JSON 注入（适配 docker swarm secrets / env），未配置时接口自动降级。
+   */
+  analytics: {
+    /** GA4 数值型 Property ID（形如 123456789），注意不是 Measurement ID（G-xxxx） */
+    ga4PropertyId: env.GA4_PROPERTY_ID || '',
+    /** service account 凭证 JSON（原文或 base64），需含 client_email 与 private_key */
+    ga4Credentials: env.GA4_CREDENTIALS || '',
+    /** 看板数据缓存秒数，降低 GA Data API 配额消耗 */
+    cacheTtl: Number(env.GA4_CACHE_TTL) || 3600,
+  },
+
+  /**
    * 内容变更 Webhook：文章/站点信息变动时通知外部 AI 知识库服务（surmon.me.ai）。
    * 采用 HMAC-SHA256 签名 + 时间戳防重放，与 NodePress 的 webhook 协议一致。
    */

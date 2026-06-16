@@ -60,17 +60,20 @@ export const APP_CONFIG = {
   },
 
   /**
-   * Google Analytics 4 访客统计（后台看板「访客统计」图）。
-   * 需在 GCP 创建 service account，并将其邮箱授予该 GA4 资源「查看者」权限。
-   * 凭证以内联 JSON 注入（适配 docker swarm secrets / env），未配置时接口自动降级。
+   * 自托管 Umami 访客统计（后台看板「访客统计」图）。
+   * 采集端与读数端均在自有服务器，规避海外 API 不可达问题。
+   * Koa 经内网调用 Umami REST API（容器名 http://umami:3000），未配置时接口自动降级。
    */
   analytics: {
-    /** GA4 数值型 Property ID（形如 123456789），注意不是 Measurement ID（G-xxxx） */
-    ga4PropertyId: env.GA4_PROPERTY_ID || '',
-    /** service account 凭证 JSON（原文或 base64），需含 client_email 与 private_key */
-    ga4Credentials: env.GA4_CREDENTIALS || '',
-    /** 看板数据缓存秒数，降低 GA Data API 配额消耗 */
-    cacheTtl: Number(env.GA4_CACHE_TTL) || 3600,
+    /** Umami 服务内网地址（如 http://umami:3000），末尾斜杠会被去除 */
+    apiUrl: (env.UMAMI_API_URL || '').replace(/\/+$/, ''),
+    /** Umami 网站 ID（Umami 后台「设置 → 网站」获取，为 UUID） */
+    websiteId: env.UMAMI_WEBSITE_ID || '',
+    /** 读数账号（建议在 Umami 单独建只读账号，勿用埋点脚本暴露的任何凭证） */
+    username: env.UMAMI_USERNAME || '',
+    password: env.UMAMI_PASSWORD || '',
+    /** 看板数据缓存秒数，降低对 Umami 的请求频率 */
+    cacheTtl: Number(env.UMAMI_CACHE_TTL) || 3600,
   },
 
   /**

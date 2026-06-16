@@ -4,8 +4,7 @@
 FROM node:22-slim AS base
 RUN corepack enable pnpm
 WORKDIR /app
-# pnpm-workspace.yaml 携带 allowBuilds 构建脚本批准（pnpm 11 必需），需与 manifest 一同进入安装层
-COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
+COPY package.json pnpm-lock.yaml* ./
 
 # ---------- 开发层：热重载（docker-compose dev 使用 target: dev） ----------
 FROM base AS dev

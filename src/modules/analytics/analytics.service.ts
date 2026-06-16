@@ -6,6 +6,7 @@ import { APP_CONFIG } from '@/app.config'
 import { CacheService } from '@/core/cache/cache.service'
 import { AnalyticsRange, RANGE_DAYS } from './analytics.dto'
 import { VisitorLog } from './analytics.model'
+import { IPLocationService } from './ip-location.service'
 
 /** 单日访客指标：pv = 页面浏览量，uv = 独立访客数 */
 export interface VisitorPoint {
@@ -20,6 +21,33 @@ export interface VisitorStats {
   range: AnalyticsRange
   series: VisitorPoint[]
   totals: { pv: number; uv: number }
+}
+
+/** 维度聚合项（地区 / 国家 / 页面）：pv 浏览量、uv 独立访客 */
+export interface DimensionStat {
+  key: string
+  pv: number
+  uv: number
+}
+
+/** 最近访客明细（不含原始 IP，仅展示归属地） */
+export interface RecentVisitor {
+  time: Date
+  location: string
+  country: string
+  country_code: string
+  isp: string
+  path: string
+}
+
+/** 访客分析页所需的多维洞察 */
+export interface VisitorInsights {
+  range: AnalyticsRange
+  totals: { pv: number; uv: number }
+  topLocations: DimensionStat[]
+  topCountries: DimensionStat[]
+  topPages: DimensionStat[]
+  recent: RecentVisitor[]
 }
 
 /** 东八区偏移：按 Asia/Shanghai 切分自然日，不依赖运行环境 TZ */
@@ -38,16 +66,29 @@ export class AnalyticsService {
   constructor(
     @InjectModel(VisitorLog) private readonly visitorLogModel: Model<VisitorLog>,
     private readonly cache: CacheService,
+    private readonly ipLocation: IPLocationService,
   ) {}
 
-  /** 记录一次访问（PV）；访客指纹用于读取时的 UV 去重 */
+  /** 记录一次访问（PV）；解析归属地并落库，访客指纹用于读取时的 UV 去重 */
   async collect(input: { ip: string; ua: string; path?: string }): Promise<void> {
     const day = this.dayString(Date.now())
     const visitorKey = createHash('sha256')
       .update(`${input.ip}|${input.ua}|${day}|${APP_CONFIG.auth.jwtSecret}`)
       .digest('hex')
     try {
-      await this.visitorLogModel.create({ day, visitorKey, path: input.path?.slice(0, 512) })
+      // 归属地解析带缓存与超时，失败不阻断埋点写入
+      const geo = await this.ipLocation.resolve(input.ip).catch(() => null)
+      await this.visitorLogModel.create({
+        day,
+        visitorKey,
+        path: input.path?.slice(0, 512),
+        location: geo?.location,
+        country: geo?.country,
+        country_code: geo?.countryCode,
+        region: geo?.region,
+        city: geo?.city,
+        isp: geo?.isp,
+      })
     } catch (error) {
       // 埋点失败不应影响前台体验，仅记录
       this.logger.warn(`访客埋点写入失败：${(error as Error).message}`)
@@ -80,6 +121,71 @@ export class AnalyticsService {
     const result: VisitorStats = { configured: true, range, series, totals }
     await this.cache.set(cacheKey, result, APP_CONFIG.analytics.cacheTtl)
     return result
+  }
+
+  /** 访客分析：地区 / 国家 / 页面的 Top 维度聚合 + 最近访客明细 */
+  async getInsights(range: AnalyticsRange): Promise<VisitorInsights> {
+    const cacheKey = `analytics:insights:${range}`
+    const cached = await this.cache.get<VisitorInsights>(cacheKey)
+    if (cached) return cached
+
+    const days = RANGE_DAYS[range]
+    const startDay = this.dayString(Date.now() - (days - 1) * DAY_MS)
+    const match = { day: { $gte: startDay } }
+
+    const [topLocations, topCountries, topPages, recentRows, totalsRow] = await Promise.all([
+      this.aggregateDimension(match, '$location', 20),
+      this.aggregateDimension(match, '$country', 12),
+      this.aggregateDimension(match, '$path', 20),
+      this.visitorLogModel
+        .find(match, { _id: 0, created_at: 1, location: 1, country: 1, country_code: 1, isp: 1, path: 1 })
+        .sort({ created_at: -1 })
+        .limit(50)
+        .lean()
+        .exec(),
+      this.visitorLogModel
+        .aggregate<{ pv: number; uv: number }>([
+          { $match: match },
+          { $group: { _id: null, pv: { $sum: 1 }, visitors: { $addToSet: '$visitorKey' } } },
+          { $project: { _id: 0, pv: 1, uv: { $size: '$visitors' } } },
+        ])
+        .exec(),
+    ])
+
+    const result: VisitorInsights = {
+      range,
+      totals: totalsRow[0] ?? { pv: 0, uv: 0 },
+      topLocations,
+      topCountries,
+      topPages,
+      recent: recentRows.map((r) => ({
+        time: r.created_at,
+        location: r.location || '未知',
+        country: r.country || '',
+        country_code: r.country_code || '',
+        isp: r.isp || '',
+        path: r.path || '',
+      })),
+    }
+    await this.cache.set(cacheKey, result, APP_CONFIG.analytics.cacheTtl)
+    return result
+  }
+
+  /** 按某字段聚合 PV/UV 的 Top N（忽略空值字段） */
+  private aggregateDimension(
+    match: Record<string, unknown>,
+    field: string,
+    limit: number,
+  ): Promise<DimensionStat[]> {
+    return this.visitorLogModel
+      .aggregate<DimensionStat>([
+        { $match: { ...match, [field.slice(1)]: { $nin: [null, ''] } } },
+        { $group: { _id: field, pv: { $sum: 1 }, visitors: { $addToSet: '$visitorKey' } } },
+        { $project: { _id: 0, key: '$_id', pv: 1, uv: { $size: '$visitors' } } },
+        { $sort: { pv: -1 } },
+        { $limit: limit },
+      ])
+      .exec()
   }
 
   /** 毫秒时间戳按东八区换算为 YYYY-MM-DD */

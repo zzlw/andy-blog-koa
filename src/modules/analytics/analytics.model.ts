@@ -24,6 +24,30 @@ export class VisitorLog {
   @prop({ maxlength: 512 })
   path?: string
 
+  /** 完整归属地（中文优先，如「中国 浙江省 杭州市 西湖区 · 电信」），用于地区分布与最近访客展示 */
+  @prop({ maxlength: 256, index: true })
+  location?: string
+
+  /** 国家（中文，按国家聚合用） */
+  @prop({ maxlength: 64 })
+  country?: string
+
+  /** ISO 国家码（如 CN/US），前端可据此显示国旗 */
+  @prop({ maxlength: 8 })
+  country_code?: string
+
+  /** 省/州 */
+  @prop({ maxlength: 64 })
+  region?: string
+
+  /** 城市 */
+  @prop({ maxlength: 64 })
+  city?: string
+
+  /** 网络运营商 / 组织（如 中国电信、Google LLC） */
+  @prop({ maxlength: 128 })
+  isp?: string
+
   /** 落库时间；TTL 400 天后自动清理（Mongo 后台 TTL 监控线程删除） */
   @prop({ default: () => new Date(), expires: 60 * 60 * 24 * 400 })
   created_at: Date

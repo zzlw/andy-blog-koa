@@ -30,6 +30,13 @@ export class AnalyticsController {
     return this.analyticsService.getVisitorStats(query.range ?? '30d')
   }
 
+  /** 访客分析洞察（地区/国家/页面 Top + 最近访客），仅超管可见 */
+  @Get('insights')
+  @Auth(AuthorRole.SUPER_ADMIN)
+  insights(@Query() query: VisitorStatsQueryDTO) {
+    return this.analyticsService.getInsights(query.range ?? '30d')
+  }
+
   /** 取真实客户端 IP：优先 nginx 注入的 X-Forwarded-For / X-Real-IP */
   private clientIp(request: FastifyRequest): string {
     const xff = request.headers['x-forwarded-for']

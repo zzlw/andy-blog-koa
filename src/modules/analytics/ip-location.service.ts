@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import libQQWry = require('lib-qqwry')
+import libQQWry from 'lib-qqwry'
 import { CacheService } from '@/core/cache/cache.service'
 
 /**

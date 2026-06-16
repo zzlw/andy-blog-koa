@@ -37,12 +37,21 @@ export const APP_CONFIG = {
     publicUrl: env.S3_PUBLIC_URL || 'http://localhost:9000/andy-blog/',
     /** MinIO 等自建服务需要 path-style；AWS S3 可设为 false */
     forcePathStyle: env.S3_FORCE_PATH_STYLE !== 'false',
+    /** 图片/文章附件默认前缀 */
     keyPrefix: 'blog/',
+    /** 音乐文件前缀（与线上 OSS 既有 music/ 目录对齐） */
+    musicPrefix: 'music/',
   },
 
   upload: {
-    /** 单文件大小上限 2MB */
+    /** 图片单文件上限 2MB（小文件，缓冲上传） */
     singleLimit: 1024 * 1024 * 2,
+    /** 文章附件单文件上限 100MB（pdf/zip 等，流式上传，不缓冲到内存） */
+    attachmentLimit: 1024 * 1024 * 100,
+    /** 音频单文件上限 100MB（流式上传） */
+    audioLimit: 1024 * 1024 * 100,
+    /** multipart 全局硬上限：取各类型最大值，具体类型再在路由层按 fileSize 二次约束 */
+    maxFileSize: 1024 * 1024 * 100,
     /** 单次最多上传数量 */
     maxCount: 10,
   },

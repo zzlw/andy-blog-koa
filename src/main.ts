@@ -57,7 +57,8 @@ async function bootstrap() {
 
   await app.register(fastifyMultipart as any, {
     limits: {
-      fileSize: APP_CONFIG.upload.singleLimit,
+      // 全局硬上限取最大类型（音频 30MB）；图片/附件等更小限额在各上传路由二次校验
+      fileSize: APP_CONFIG.upload.maxFileSize,
       files: APP_CONFIG.upload.maxCount,
     },
   })

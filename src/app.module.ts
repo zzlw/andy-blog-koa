@@ -20,6 +20,7 @@ import { MessageModule } from '@/modules/message/message.module'
 import { FriendModule } from '@/modules/friend/friend.module'
 import { AuthorModule } from '@/modules/author/author.module'
 import { FileModule } from '@/modules/file/file.module'
+import { MusicModule } from '@/modules/music/music.module'
 import { WebhookModule } from '@/modules/webhook/webhook.module'
 import { AnalyticsModule } from '@/modules/analytics/analytics.module'
 
@@ -40,6 +41,7 @@ import { AnalyticsModule } from '@/modules/analytics/analytics.module'
     MessageModule,
     FriendModule,
     FileModule,
+    MusicModule,
     WebhookModule,
     AnalyticsModule,
   ],

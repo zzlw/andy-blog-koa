@@ -196,7 +196,14 @@ export class IPLocationService {
     const clean = (v?: string) => (v ?? '').trim()
     const parts: string[] = []
     for (const part of [clean(raw.country), clean(raw.region), clean(raw.city)]) {
-      if (part && parts[parts.length - 1] !== part) parts.push(part)
+      if (!part) continue
+      const prev = parts[parts.length - 1]
+      // 相邻层级一方包含另一方（如「北京市」与「北京」）时，只保留更详尽的
+      if (prev && (prev.includes(part) || part.includes(prev))) {
+        if (part.length > prev.length) parts[parts.length - 1] = part
+        continue
+      }
+      parts.push(part)
     }
     return {
       country: clean(raw.country),

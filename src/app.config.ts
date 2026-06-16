@@ -60,20 +60,12 @@ export const APP_CONFIG = {
   },
 
   /**
-   * 自托管 Umami 访客统计（后台看板「访客统计」图）。
-   * 采集端与读数端均在自有服务器，规避海外 API 不可达问题。
-   * Koa 经内网调用 Umami REST API（容器名 http://umami:3000），未配置时接口自动降级。
+   * 自建访客统计（后台看板「访客统计」图），数据落在已有 MongoDB，无外部依赖。
+   * 采集：前台路由切换上报 PV；读取：按天聚合 PV/UV。访客指纹以 auth.jwtSecret 加盐。
    */
   analytics: {
-    /** Umami 服务内网地址（如 http://umami:3000），末尾斜杠会被去除 */
-    apiUrl: (env.UMAMI_API_URL || '').replace(/\/+$/, ''),
-    /** Umami 网站 ID（Umami 后台「设置 → 网站」获取，为 UUID） */
-    websiteId: env.UMAMI_WEBSITE_ID || '',
-    /** 读数账号（建议在 Umami 单独建只读账号，勿用埋点脚本暴露的任何凭证） */
-    username: env.UMAMI_USERNAME || '',
-    password: env.UMAMI_PASSWORD || '',
-    /** 看板数据缓存秒数，降低对 Umami 的请求频率 */
-    cacheTtl: Number(env.UMAMI_CACHE_TTL) || 3600,
+    /** 看板读数缓存秒数，降低按天聚合的查询频率 */
+    cacheTtl: Number(env.ANALYTICS_CACHE_TTL) || 300,
   },
 
   /**

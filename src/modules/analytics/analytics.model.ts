@@ -48,6 +48,22 @@ export class VisitorLog {
   @prop({ maxlength: 128 })
   isp?: string
 
+  /** 原始访客 IP（仅后台管理可见；内网/解析失败可能为空） */
+  @prop({ maxlength: 64 })
+  ip?: string
+
+  /** 浏览器（由 UA 解析，如 Chrome 124） */
+  @prop({ maxlength: 64 })
+  browser?: string
+
+  /** 操作系统（由 UA 解析，如 Windows 10/11、iOS 17.4） */
+  @prop({ maxlength: 64 })
+  os?: string
+
+  /** 设备类型：Desktop / Mobile / Tablet / Bot */
+  @prop({ maxlength: 16 })
+  device?: string
+
   /** 落库时间；TTL 400 天后自动清理（Mongo 后台 TTL 监控线程删除） */
   @prop({ default: () => new Date(), expires: 60 * 60 * 24 * 400 })
   created_at: Date

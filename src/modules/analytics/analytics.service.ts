@@ -7,6 +7,7 @@ import { CacheService } from '@/core/cache/cache.service'
 import { AnalyticsRange, RANGE_DAYS } from './analytics.dto'
 import { VisitorLog } from './analytics.model'
 import { IPLocationService } from './ip-location.service'
+import { parseUA } from './ua-parser'
 
 /** 单日访客指标：pv = 页面浏览量，uv = 独立访客数 */
 export interface VisitorPoint {
@@ -30,13 +31,17 @@ export interface DimensionStat {
   uv: number
 }
 
-/** 最近访客明细（不含原始 IP，仅展示归属地） */
+/** 最近访客明细（后台管理可见，含 IP/设备） */
 export interface RecentVisitor {
   time: Date
+  ip: string
   location: string
   country: string
   country_code: string
   isp: string
+  browser: string
+  os: string
+  device: string
   path: string
 }
 
@@ -78,16 +83,21 @@ export class AnalyticsService {
     try {
       // 归属地解析带缓存与超时，失败不阻断埋点写入
       const geo = await this.ipLocation.resolve(input.ip).catch(() => null)
+      const ua = parseUA(input.ua)
       await this.visitorLogModel.create({
         day,
         visitorKey,
         path: input.path?.slice(0, 512),
+        ip: input.ip,
         location: geo?.location,
         country: geo?.country,
         country_code: geo?.countryCode,
         region: geo?.region,
         city: geo?.city,
         isp: geo?.isp,
+        browser: ua.browser,
+        os: ua.os,
+        device: ua.device,
       })
     } catch (error) {
       // 埋点失败不应影响前台体验，仅记录
@@ -144,7 +154,19 @@ export class AnalyticsService {
       this.aggregateDimension(match, '$country', 12),
       this.aggregateDimension(match, '$path', 20),
       this.visitorLogModel
-        .find(match, { _id: 0, created_at: 1, location: 1, country: 1, country_code: 1, isp: 1, path: 1 })
+        .find(match, {
+          _id: 0,
+          created_at: 1,
+          ip: 1,
+          location: 1,
+          country: 1,
+          country_code: 1,
+          isp: 1,
+          browser: 1,
+          os: 1,
+          device: 1,
+          path: 1,
+        })
         .sort({ created_at: -1 })
         .limit(50)
         .lean()
@@ -166,10 +188,14 @@ export class AnalyticsService {
       topPages,
       recent: recentRows.map((r) => ({
         time: r.created_at,
+        ip: r.ip || '',
         location: r.location || '未知',
         country: r.country || '',
         country_code: r.country_code || '',
         isp: r.isp || '',
+        browser: r.browser || '',
+        os: r.os || '',
+        device: r.device || '',
         path: r.path || '',
       })),
     }

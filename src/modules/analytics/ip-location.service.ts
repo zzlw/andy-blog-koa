@@ -68,9 +68,13 @@ export class IPLocationService {
     return location
   }
 
-  /** 融合纯真库与 ip-api：地理串取更详尽者，国家码取 ip-api */
+  /**
+   * 融合纯真库与 ip-api：
+   * - location 优先用纯真库（干净中文、国内常到区县/街道级），缺失时回退 ip-api
+   * - isp 优先纯真库（中文「联通/电信」），国家码取 ip-api（用于国旗与国家维度聚合）
+   */
   private merge(qq: { place: string; isp: string } | null, api: ProviderResult | null): IPLocation {
-    const place = this.pickRicher(qq?.place, api?.place)
+    const place = qq?.place || api?.place || ''
     const isp = qq?.isp || api?.isp || ''
     // ip-api 缺失时（如被限流）用纯真库地理串补出国家码，至少保证中国 IP 有国旗
     const guessedCn = /中国|省|市|自治区|特别行政区/.test(qq?.place ?? '')
@@ -82,15 +86,6 @@ export class IPLocationService {
       isp,
       location: place || '未知',
     }
-  }
-
-  /** 取信息更丰富（更长）的地理串 */
-  private pickRicher(a?: string, b?: string): string {
-    const x = (a ?? '').trim()
-    const y = (b ?? '').trim()
-    if (!x) return y
-    if (!y) return x
-    return x.length >= y.length ? x : y
   }
 
   private initQqwry(): ReturnType<typeof libQQWry> | null {
@@ -127,9 +122,9 @@ export class IPLocationService {
       .trim()
   }
 
-  /** ip-api.com：中文地名 + ISO 国家码 + 区县 */
+  /** ip-api.com：仅作补充，提供中文地名与 ISO 国家码（地理精度以纯真库为主） */
   private async queryByIpApi(ip: string): Promise<ProviderResult> {
-    const fields = 'status,message,country,countryCode,regionName,city,district'
+    const fields = 'status,message,country,countryCode,regionName,city'
     const url = `http://ip-api.com/json/${encodeURIComponent(ip)}?lang=zh-CN&fields=${fields}`
     const data = await this.fetchJson(url)
     if (data?.status !== 'success') throw new Error(data?.message || 'ip-api failed')
@@ -138,7 +133,6 @@ export class IPLocationService {
       countryCode: data.countryCode,
       region: data.regionName,
       city: data.city,
-      district: data.district,
       isp: '',
     })
   }
@@ -152,7 +146,6 @@ export class IPLocationService {
       countryCode: data.country_code,
       region: data.region,
       city: data.city,
-      district: '',
       isp: data.org,
     })
   }
@@ -178,12 +171,11 @@ export class IPLocationService {
     countryCode?: string
     region?: string
     city?: string
-    district?: string
     isp?: string
   }): ProviderResult {
     const clean = (v?: string) => (v ?? '').trim()
     const parts: string[] = []
-    for (const part of [clean(raw.country), clean(raw.region), clean(raw.city), clean(raw.district)]) {
+    for (const part of [clean(raw.country), clean(raw.region), clean(raw.city)]) {
       if (part && parts[parts.length - 1] !== part) parts.push(part)
     }
     return {

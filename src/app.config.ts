@@ -64,8 +64,8 @@ export const APP_CONFIG = {
    * 采集：前台路由切换上报 PV；读取：按天聚合 PV/UV。访客指纹以 auth.jwtSecret 加盐。
    */
   analytics: {
-    /** 看板读数缓存秒数，降低按天聚合的查询频率 */
-    cacheTtl: Number(env.ANALYTICS_CACHE_TTL) || 300,
+    /** 看板读数缓存秒数；≤0 表示不缓存（实时聚合）。默认 0 实时 */
+    cacheTtl: Number(env.ANALYTICS_CACHE_TTL) || 0,
   },
 
   /**

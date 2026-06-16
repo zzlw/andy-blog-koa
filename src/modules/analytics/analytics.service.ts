@@ -96,9 +96,12 @@ export class AnalyticsService {
   }
 
   async getVisitorStats(range: AnalyticsRange): Promise<VisitorStats> {
+    const ttl = APP_CONFIG.analytics.cacheTtl
     const cacheKey = `analytics:visitors:${range}`
-    const cached = await this.cache.get<VisitorStats>(cacheKey)
-    if (cached) return cached
+    if (ttl > 0) {
+      const cached = await this.cache.get<VisitorStats>(cacheKey)
+      if (cached) return cached
+    }
 
     const days = RANGE_DAYS[range]
     const startDay = this.dayString(Date.now() - (days - 1) * DAY_MS)
@@ -119,15 +122,18 @@ export class AnalyticsService {
     )
 
     const result: VisitorStats = { configured: true, range, series, totals }
-    await this.cache.set(cacheKey, result, APP_CONFIG.analytics.cacheTtl)
+    if (ttl > 0) await this.cache.set(cacheKey, result, ttl)
     return result
   }
 
   /** 访客分析：地区 / 国家 / 页面的 Top 维度聚合 + 最近访客明细 */
   async getInsights(range: AnalyticsRange): Promise<VisitorInsights> {
+    const ttl = APP_CONFIG.analytics.cacheTtl
     const cacheKey = `analytics:insights:${range}`
-    const cached = await this.cache.get<VisitorInsights>(cacheKey)
-    if (cached) return cached
+    if (ttl > 0) {
+      const cached = await this.cache.get<VisitorInsights>(cacheKey)
+      if (cached) return cached
+    }
 
     const days = RANGE_DAYS[range]
     const startDay = this.dayString(Date.now() - (days - 1) * DAY_MS)
@@ -167,7 +173,7 @@ export class AnalyticsService {
         path: r.path || '',
       })),
     }
-    await this.cache.set(cacheKey, result, APP_CONFIG.analytics.cacheTtl)
+    if (ttl > 0) await this.cache.set(cacheKey, result, ttl)
     return result
   }
 

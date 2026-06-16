@@ -69,23 +69,43 @@ export class IPLocationService {
   }
 
   /**
-   * 融合纯真库与 ip-api：
-   * - location 优先用纯真库（干净中文、国内常到区县/街道级），缺失时回退 ip-api
+   * 融合纯真库与 ip-api，地理串取「更详尽者」：
+   * - 纯真库住宅 IP 常到区县/街道；ip-api 对部分网关 IP 反而有区县级
+   * - 两者都规范化后按行政层级（去空格字符数近似）取更细的一个
    * - isp 优先纯真库（中文「联通/电信」），国家码取 ip-api（用于国旗与国家维度聚合）
    */
   private merge(qq: { place: string; isp: string } | null, api: ProviderResult | null): IPLocation {
-    const place = qq?.place || api?.place || ''
-    const isp = qq?.isp || api?.isp || ''
-    // ip-api 缺失时（如被限流）用纯真库地理串补出国家码，至少保证中国 IP 有国旗
     const guessedCn = /中国|省|市|自治区|特别行政区/.test(qq?.place ?? '')
+    const countryCode = api?.countryCode || (guessedCn ? 'CN' : '')
+    // 国内去掉「中国」前缀，与纯真库格式一致并便于公平比较详尽度
+    const apiPlace = this.stripCnPrefix(api?.place, countryCode)
+    const place = this.pickRicher(qq?.place, apiPlace)
+    const isp = qq?.isp || api?.isp || ''
     return {
       country: api?.country || (guessedCn ? '中国' : ''),
-      countryCode: api?.countryCode || (guessedCn ? 'CN' : ''),
+      countryCode,
       region: api?.region || '',
       city: api?.city || '',
       isp,
       location: place || '未知',
     }
+  }
+
+  /** 取行政层级更细（去空格后更长）的地理串 */
+  private pickRicher(a?: string, b?: string): string {
+    const x = (a ?? '').trim()
+    const y = (b ?? '').trim()
+    if (!x) return y
+    if (!y) return x
+    const len = (s: string) => s.replace(/\s/g, '').length
+    return len(x) >= len(y) ? x : y
+  }
+
+  /** 国内地理串去掉「中国」前缀（国旗已表达国家，且与纯真库格式统一） */
+  private stripCnPrefix(place: string | undefined, countryCode: string): string {
+    const value = (place ?? '').trim()
+    if (!value) return ''
+    return countryCode === 'CN' || /^中国/.test(value) ? value.replace(/^中国\s*/, '') : value
   }
 
   private initQqwry(): ReturnType<typeof libQQWry> | null {

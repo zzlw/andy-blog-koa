@@ -23,6 +23,7 @@ import { FileModule } from '@/modules/file/file.module'
 import { MusicModule } from '@/modules/music/music.module'
 import { WebhookModule } from '@/modules/webhook/webhook.module'
 import { AnalyticsModule } from '@/modules/analytics/analytics.module'
+import { WechatModule } from '@/modules/wechat/wechat.module'
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AnalyticsModule } from '@/modules/analytics/analytics.module'
     MusicModule,
     WebhookModule,
     AnalyticsModule,
+    WechatModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

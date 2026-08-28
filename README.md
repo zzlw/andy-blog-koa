@@ -44,3 +44,4 @@ docker exec -i <prod-mongo-container> mongorestore --archive --gzip --drop < and
 | `S3_BUCKET` | 存储桶名称 |
 | `S3_PUBLIC_URL` | 浏览器可达的资源基础地址（CDN 域名），以 `/` 结尾 |
 | `S3_FORCE_PATH_STYLE` | 是否 path-style 访问，MinIO 需 `true`（默认），AWS 设 `false` |
+| `WECHAT_APP_ID` / `WECHAT_APP_SECRET` | 已认证服务号的 AppID / AppSecret，用于 JS-SDK 分享签名；留空则接口返回 `enabled: false` |

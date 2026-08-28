@@ -61,3 +61,9 @@ export class UploadFailedException extends BizException {
     super(ErrorCode.UPLOAD_FAILED, message, HttpStatus.BAD_REQUEST)
   }
 }
+
+export class WechatException extends BizException {
+  constructor(message = '微信服务异常') {
+    super(ErrorCode.WECHAT_FAILED, message, HttpStatus.BAD_GATEWAY)
+  }
+}

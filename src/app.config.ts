@@ -89,4 +89,13 @@ export const APP_CONFIG = {
     /** 请求超时（毫秒） */
     timeoutMs: Number(env.WEBHOOK_TIMEOUT_MS) || 8000,
   },
+
+  /**
+   * 微信 JS-SDK（朋友圈/聊天自定义分享）。未配置 AppID/AppSecret 时签名接口返回 enabled:false，
+   * 前台跳过注入，本地开发无需真实公众号凭据。
+   */
+  wechat: {
+    appId: env.WECHAT_APP_ID || '',
+    appSecret: env.WECHAT_APP_SECRET || '',
+  },
 }

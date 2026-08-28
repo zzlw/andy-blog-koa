@@ -61,6 +61,9 @@ jobs:
           context: .
           target: runner
           push: true
+          # 阿里云 ACR 不接受 buildx 默认附带的 OCI provenance/SBOM 空 manifest
+          provenance: false
+          sbom: false
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
